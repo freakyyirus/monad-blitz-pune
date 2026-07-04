@@ -240,7 +240,7 @@ export default function CreateBountyPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="border border-brand-border bg-white p-10 space-y-10">
+          <div className="border border-brand-border bg-[#0f172a]/40 backdrop-blur-xl p-10 space-y-10 rounded-[24px]">
             {/* Title Input */}
             <div>
               <label className="block text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-3">
@@ -249,7 +249,7 @@ export default function CreateBountyPage() {
               <input
                 type="text"
                 required
-                className="w-full border border-brand-border bg-brand-paper/30 px-4 py-4 text-xs font-semibold text-primary placeholder-primary/20 transition-all focus:border-primary focus:outline-none"
+                className="w-full border border-brand-border bg-white/5 rounded-xl px-4 py-4 text-xs font-semibold text-white placeholder-white/20 transition-all focus:border-accent focus:outline-none"
                 placeholder="e.g. Protocol Implementation: Parallel Execution Layer"
                 value={formData.title}
                 onChange={(e) =>
@@ -268,7 +268,7 @@ export default function CreateBountyPage() {
                   type="number"
                   step="0.0001"
                   required
-                  className="w-full border border-brand-border bg-brand-paper/30 px-4 py-4 text-xs font-semibold text-primary placeholder-primary/20 transition-all focus:border-primary focus:outline-none"
+                  className="w-full border border-brand-border bg-white/5 rounded-xl px-4 py-4 text-xs font-semibold text-white placeholder-white/20 transition-all focus:border-accent focus:outline-none"
                   placeholder="0.00"
                   value={formData.prize}
                   onChange={(e) =>
@@ -293,8 +293,8 @@ export default function CreateBountyPage() {
           </div>
 
           {/* Platform Fee Info */}
-          <div className="border border-brand-border bg-brand-paper p-6 flex items-center gap-4">
-            <div className="p-3 border border-primary/10 bg-white text-primary/40">
+          <div className="border border-brand-border bg-[#0f172a]/40 backdrop-blur-xl p-6 flex items-center gap-4 rounded-2xl">
+            <div className="p-3 border border-white/10 bg-white/5 text-white/40 rounded-xl">
               <AlertCircle className="h-4 w-4" />
             </div>
             <div>
@@ -309,7 +309,7 @@ export default function CreateBountyPage() {
 
           {/* Wallet Selection */}
           {authenticated && walletsReady && (
-            <div className="border border-brand-border bg-white p-8">
+            <div className="border border-brand-border bg-[#0f172a]/40 backdrop-blur-xl p-8 rounded-[24px]">
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-[10px] font-bold text-primary/40 uppercase tracking-widest">
                   Settlement Source
@@ -341,13 +341,13 @@ export default function CreateBountyPage() {
                       key={w.wallet.address}
                       type="button"
                       onClick={() => setSelectedWallet(w.wallet)}
-                      className={`flex w-full items-center justify-between border p-4 transition-all ${selectedWallet?.address === w.wallet.address
-                        ? "border-primary bg-brand-paper"
-                        : "border-brand-border bg-white hover:bg-brand-paper/50"
+                      className={`flex w-full items-center justify-between border p-4 rounded-xl transition-all ${selectedWallet?.address === w.wallet.address
+                        ? "border-accent bg-accent/10"
+                        : "border-brand-border bg-white/5 hover:bg-white/10"
                         }`}
                     >
                       <div className="flex items-center gap-4">
-                        <div className={`p-2 border ${w.isEmbedded ? "border-primary/10 text-primary/20" : "border-primary/20 text-primary/60"}`}>
+                        <div className={`p-2 border rounded-lg ${w.isEmbedded ? "border-white/10 text-white/20" : "border-white/20 text-white/60"}`}>
                           <Wallet className="h-3 w-3" />
                         </div>
                         <div className="text-left">
@@ -409,7 +409,7 @@ export default function CreateBountyPage() {
         {/* Wallet Connection Modal - Redesigned */}
         {showWalletSelector && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-paper/80 backdrop-blur-sm p-6">
-            <div className="relative w-full max-w-md border border-brand-border bg-white p-10 shadow-2xl">
+            <div className="relative w-full max-w-md border border-brand-border bg-[#0f172a] p-10 shadow-2xl rounded-2xl">
               <button
                 onClick={() => setShowWalletSelector(false)}
                 className="absolute right-6 top-6 text-primary/20 hover:text-primary transition-colors"

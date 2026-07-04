@@ -86,12 +86,15 @@ export default function CarbonHero() {
                     <div className="flex h-[400px]">
                         {/* Sidebar */}
                         <div className="hidden sm:block w-1/4 border-r border-white/10 p-6 space-y-6 bg-white/[0.02]">
-                            <div className="h-6 w-3/4 bg-white/20 rounded animate-pulse" />
-                            <div className="space-y-4 pt-4">
-                                <div className="h-4 w-full bg-white/10 rounded" />
-                                <div className="h-4 w-5/6 bg-white/10 rounded" />
-                                <div className="h-4 w-4/5 bg-accent/60 rounded shadow-[0_0_10px_rgba(91,77,255,0.4)]" />
-                                <div className="h-4 w-full bg-white/10 rounded" />
+                            <div className="text-lg font-bold text-white flex items-center gap-2">
+                                <div className="w-6 h-6 rounded bg-gradient-to-br from-accent to-accent-light" />
+                                Mon-E-Heist
+                            </div>
+                            <div className="space-y-2 pt-4">
+                                <div className="text-sm font-medium text-white/50 px-3 py-2 hover:text-white cursor-pointer transition-colors">Overview</div>
+                                <div className="text-sm font-medium text-white/50 px-3 py-2 hover:text-white cursor-pointer transition-colors">My Directives</div>
+                                <div className="text-sm font-medium text-white px-3 py-2 bg-accent/20 border border-accent/30 rounded-lg shadow-[0_0_10px_rgba(91,77,255,0.1)]">Analytics</div>
+                                <div className="text-sm font-medium text-white/50 px-3 py-2 hover:text-white cursor-pointer transition-colors">Settings</div>
                             </div>
                         </div>
 
@@ -99,17 +102,18 @@ export default function CarbonHero() {
                         <div className="flex-1 p-6 sm:p-8 space-y-8 bg-gradient-to-br from-transparent to-accent/5">
                             {/* Top Stats Cards */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                                <div className="h-28 rounded-2xl border border-white/10 bg-white/10 p-5 flex flex-col justify-between shadow-lg hover:bg-white/20 transition-colors">
-                                    <div className="h-4 w-1/2 bg-white/30 rounded" />
-                                    <div className="h-8 w-3/4 bg-white/60 rounded" />
+                                <div className="h-28 rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col justify-between shadow-lg hover:bg-white/10 transition-colors">
+                                    <div className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Total Volume</div>
+                                    <div className="text-2xl font-bold text-white tracking-tight">45,231 <span className="text-sm text-white/50 font-medium">MON</span></div>
                                 </div>
-                                <div className="h-28 rounded-2xl border border-white/10 bg-white/10 p-5 flex flex-col justify-between shadow-lg hover:bg-white/20 transition-colors hidden sm:flex">
-                                    <div className="h-4 w-1/2 bg-white/30 rounded" />
-                                    <div className="h-8 w-3/4 bg-white/60 rounded" />
+                                <div className="h-28 rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col justify-between shadow-lg hover:bg-white/10 transition-colors hidden sm:flex">
+                                    <div className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Active Hunters</div>
+                                    <div className="text-2xl font-bold text-white tracking-tight">1,204</div>
                                 </div>
-                                <div className="h-28 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/40 to-accent/10 p-5 flex flex-col justify-between shadow-[0_0_20px_rgba(91,77,255,0.2)]">
-                                    <div className="h-4 w-1/2 bg-white/50 rounded" />
-                                    <div className="h-8 w-3/4 bg-white rounded" />
+                                <div className="h-28 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/20 to-accent/5 p-5 flex flex-col justify-between shadow-[0_0_20px_rgba(91,77,255,0.15)] relative overflow-hidden">
+                                    <div className="absolute -right-4 -top-4 w-16 h-16 bg-accent rounded-full filter blur-xl opacity-30" />
+                                    <div className="text-[10px] font-bold text-white/80 uppercase tracking-widest relative z-10">Pending Rewards</div>
+                                    <div className="text-2xl font-bold text-white tracking-tight relative z-10">8,450 <span className="text-sm text-white/70 font-medium">MON</span></div>
                                 </div>
                             </div>
 

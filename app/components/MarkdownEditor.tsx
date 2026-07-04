@@ -62,10 +62,10 @@ export function MarkdownEditor({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {label && <label className="text-sm font-medium text-gray-600">{label}</label>}
+      {label && <label className="text-[10px] font-bold text-primary/40 uppercase tracking-widest">{label}</label>}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-3 py-2">
+      <div className="overflow-hidden rounded-xl border border-brand-border bg-white/5">
+        <div className="flex items-center justify-between border-b border-brand-border bg-black/20 px-3 py-2">
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -73,8 +73,8 @@ export function MarkdownEditor({
               className={cn(
                 "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                 !isPreview
-                  ? "bg-white text-blue-600 shadow-sm border border-gray-200"
-                  : "text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  ? "bg-accent/20 text-accent shadow-sm border border-accent/30"
+                  : "text-white/40 hover:bg-white/10 hover:text-white"
               )}
             >
               <Edit2 className="h-4 w-4" />
@@ -86,8 +86,8 @@ export function MarkdownEditor({
               className={cn(
                 "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                 isPreview
-                  ? "bg-white text-blue-600 shadow-sm border border-gray-200"
-                  : "text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                  ? "bg-accent/20 text-accent shadow-sm border border-accent/30"
+                  : "text-white/40 hover:bg-white/10 hover:text-white"
               )}
             >
               <Eye className="h-4 w-4" />
@@ -107,7 +107,7 @@ export function MarkdownEditor({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors"
               title="Upload Image or File"
             >
               {isUploading ? (
@@ -122,7 +122,7 @@ export function MarkdownEditor({
 
         <div className="min-h-[200px] p-4">
           {isPreview ? (
-            <div className="min-h-[200px] w-full prose max-w-none text-gray-700 break-words">
+            <div className="min-h-[200px] w-full prose prose-invert max-w-none text-white/80 break-words">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {value || "*Nothing to preview*"}
               </ReactMarkdown>
@@ -132,12 +132,12 @@ export function MarkdownEditor({
               value={value}
               onChange={(e) => onChange(e.target.value)}
               placeholder={placeholder}
-              className="h-full min-h-[200px] w-full resize-y bg-transparent outline-none placeholder:text-gray-400 text-gray-900"
+              className="h-full min-h-[200px] w-full resize-y bg-transparent outline-none placeholder:text-white/20 text-white"
             />
           )}
         </div>
       </div>
-      <p className="text-xs text-gray-400">
+      <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest mt-1">
         Supports Markdown. You can drag & drop images or use the &quot;Add Media&quot; button.
       </p>
     </div>
@@ -151,7 +151,7 @@ export function MarkdownViewer({ content, className }: { content: string; classN
   const sanitizedContent = DOMPurify.sanitize(content);
 
   return (
-    <div className={cn("prose max-w-none break-words text-gray-700", className)}>
+    <div className={cn("prose prose-invert max-w-none break-words text-white/80", className)}>
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{sanitizedContent}</ReactMarkdown>
     </div>
   );

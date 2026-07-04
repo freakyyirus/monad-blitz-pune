@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #070B1A;
+    --foreground: #FFFFFF;
+  }
+
+  body {
+    @apply text-primary font-sans antialiased selection:bg-accent/20;
+    background-color: var(--background);
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(91, 77, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 85% 30%, rgba(124, 107, 255, 0.15) 0%, transparent 50%);
+    background-attachment: fixed;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-accent to-accent-light px-6 py-2.5 text-sm font-semibold tracking-tight text-white transition-all duration-300 shadow-[0_0_15px_rgba(91,77,255,0.4)] hover:shadow-[0_0_25px_rgba(124,107,255,0.6)] hover:-translate-y-0.5 active:translate-y-px;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand-border bg-brand-paper px-6 py-2.5 text-sm font-semibold tracking-tight text-primary transition-all duration-300 active:translate-y-px backdrop-blur-xl hover:bg-white/5;
+  }
+
+  .card {
+    @apply rounded-[20px] border border-brand-border bg-brand-paper p-6 shadow-xl backdrop-blur-2xl;
+  }
+
+  .card-hover {
+    @apply rounded-[20px] border border-brand-border bg-brand-paper p-6 transition-all duration-300 shadow-xl backdrop-blur-2xl hover:border-accent/50 hover:shadow-[0_0_30px_rgba(91,77,255,0.15)] hover:-translate-y-1;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 
+ * Razorpay-style animated checkmark 
+ */
+.animate-tick-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4caf50;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.animate-tick-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}

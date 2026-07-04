@@ -17,7 +17,7 @@ export default function CarbonHero() {
                 {/* Hero Content */}
                 <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-16">
                     <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-border bg-white/5 backdrop-blur-md mb-8"
@@ -27,7 +27,7 @@ export default function CarbonHero() {
                     </motion.div>
 
                     <motion.h1 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-primary leading-[1.05] mb-6"
@@ -37,7 +37,7 @@ export default function CarbonHero() {
                     </motion.h1>
 
                     <motion.p 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="text-lg sm:text-xl text-primary/60 leading-relaxed max-w-2xl mb-10 font-medium"
@@ -47,7 +47,7 @@ export default function CarbonHero() {
                     </motion.p>
 
                     <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 1, y: 0 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="flex flex-col sm:flex-row items-center gap-4"
@@ -64,7 +64,7 @@ export default function CarbonHero() {
 
                 {/* Dashboard Preview Glass Pane */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 1, y: 0 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.5 }}
                     className="w-full max-w-5xl mx-auto rounded-[24px] border border-brand-border bg-[#0f172a]/80 backdrop-blur-3xl shadow-2xl overflow-hidden"

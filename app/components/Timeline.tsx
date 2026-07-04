@@ -38,7 +38,7 @@ export default function Timeline() {
 
             <div className="max-w-4xl mx-auto px-6 relative z-10">
                 <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 1, y: 0 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     className="text-center mb-24"
@@ -58,7 +58,7 @@ export default function Timeline() {
                             {/* Left Side Content (Evens) */}
                             <div className={`w-full md:w-5/12 pl-8 md:pl-0 ${index % 2 === 0 ? "md:text-right md:pr-12" : "md:order-3 md:text-left md:pl-12"} mb-4 md:mb-0`}>
                                 <motion.div
-                                    initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                                    initial={{ opacity: 1, x: 0 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true, margin: "-100px" }}
                                     transition={{ duration: 0.6, delay: 0.2 }}
@@ -70,7 +70,7 @@ export default function Timeline() {
 
                             {/* Node */}
                             <motion.div 
-                                initial={{ opacity: 0, scale: 0 }}
+                                initial={{ opacity: 1, scale: 1 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true, margin: "-100px" }}
                                 transition={{ duration: 0.5, type: "spring" }}

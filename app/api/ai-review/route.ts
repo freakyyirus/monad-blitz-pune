@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { supabase } from "@/app/lib/db";
+import { getSupabaseAdminClient } from "@/app/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = getSupabaseAdminClient();
     const { bountyId } = await req.json();
 
     if (!process.env.GOOGLE_GEMINI_API_KEY) {

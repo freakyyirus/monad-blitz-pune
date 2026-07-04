@@ -1,9 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder"; // Use Service Role for backend ops
+export const getSupabaseAdminClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+  if (!supabaseUrl) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable.");
+  }
+  
+  if (!supabaseKey) {
+    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable.");
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+};
 
 export interface Submission {
   id: string;
@@ -34,6 +44,7 @@ const normalizeAddress = (addr: string) => addr?.toLowerCase() || "";
 
 export const db = {
   getBounties: async () => {
+    const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("bounties")
       .select("*, submissions:submissions!submissions_bounty_id_fkey(*)")
@@ -65,6 +76,7 @@ export const db = {
   },
 
   getBounty: async (id: string) => {
+    const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("bounties")
       .select("*, submissions:submissions!submissions_bounty_id_fkey(*)")
@@ -103,6 +115,7 @@ export const db = {
     creatorAddress: string;
     userId?: string;
   }) => {
+    const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("bounties")
       .insert([
@@ -138,6 +151,7 @@ export const db = {
     contact: string;
     userId?: string;
   }) => {
+    const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("submissions")
       .insert([
@@ -169,6 +183,7 @@ export const db = {
       updateData.winner_submission_id = submissionId;
     }
 
+    const supabase = getSupabaseAdminClient();
     const { error } = await supabase
       .from("bounties")
       .update(updateData)
@@ -179,6 +194,7 @@ export const db = {
 
   // Get bounties by user ID OR any of their wallet addresses
   getBountiesByUser: async (userId?: string, addresses?: string[]) => {
+    const supabase = getSupabaseAdminClient();
     let query = supabase
       .from("bounties")
       .select("*, submissions:submissions!submissions_bounty_id_fkey(*)")
@@ -248,6 +264,7 @@ export const db = {
     }
 
     // First get all submission bounty_ids for this user
+    const supabase = getSupabaseAdminClient();
     const { data: submissions, error: subError } = await supabase
       .from("submissions")
       .select("bounty_id")

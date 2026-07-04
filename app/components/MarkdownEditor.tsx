@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { supabaseClient } from "@/app/lib/supabase-client";
+import { getSupabaseBrowserClient } from "@/app/lib/supabase-client";
 import { Loader2, Image as ImageIcon, Eye, Edit2 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 
@@ -32,6 +32,7 @@ export function MarkdownEditor({
 
     setIsUploading(true);
     try {
+      const supabaseClient = getSupabaseBrowserClient();
       const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${fileName}`;

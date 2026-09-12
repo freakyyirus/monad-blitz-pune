@@ -1,110 +1,112 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brain, Zap, Globe, Shield } from "lucide-react";
+import { Brain, Zap, Globe, ShieldCheck, CreditCard, KeyRound } from "lucide-react";
 
 const features = [
-    {
-        icon: Brain,
-        color: "text-purple-400",
-        bg: "bg-purple-500/10",
-        border: "group-hover:border-purple-500/50",
-        title: "AI-Powered Verification",
-        description: "Gemini AI automatically reviews all submissions, provides feedback, and picks the best work — saving hours of manual review.",
-    },
-    {
-        icon: Zap,
-        color: "text-blue-400",
-        bg: "bg-blue-500/10",
-        border: "group-hover:border-blue-500/50",
-        title: "Instant Settlement",
-        description: "Built on Monad's EVM-compatible blockchain with near-instant finality. Prize payouts happen directly wallet-to-wallet.",
-    },
-    {
-        icon: Globe,
-        color: "text-emerald-400",
-        bg: "bg-emerald-500/10",
-        border: "group-hover:border-emerald-500/50",
-        title: "Global Talent Pool",
-        description: "Access skilled developers, designers, and creators worldwide. No borders, no middlemen, just results.",
-    },
-    {
-        icon: Shield,
-        color: "text-pink-400",
-        bg: "bg-pink-500/10",
-        border: "group-hover:border-pink-500/50",
-        title: "Trustless & Secure",
-        description: "x402 payment protocol ensures skin-in-the-game. Every transaction is transparent and verifiable on-chain.",
-    },
+  {
+    icon: CreditCard,
+    title: "x402 Pay-to-Post",
+    description:
+      "Publishing costs a flat 0.001 MON via the x402 payment protocol. The server returns HTTP 402 with payment details, your wallet pays, and the tx is verified on-chain before the bounty goes live.",
+    tag: "Payments",
+  },
+  {
+    icon: Brain,
+    title: "AI-Judged Submissions",
+    description:
+      "One-click audits where Gemini 2.5 Flash streams a ranked top-3 with punchy per-submission feedback — images included in the evaluation.",
+    tag: "AI",
+  },
+  {
+    icon: ShieldCheck,
+    title: "On-Chain Verification",
+    description:
+      "Every payment is checked against the chain — recipient, amount, and receipt — for both the 0.001 MON platform fee and the final winner payout.",
+    tag: "Trust",
+  },
+  {
+    icon: Zap,
+    title: "Wallet-to-Wallet Payouts",
+    description:
+      "When you pay a winner, the payout tx is verified on Monad before the bounty ever flips to PAID. No escrow, no custody, no middlemen.",
+    tag: "Settlement",
+  },
+  {
+    icon: KeyRound,
+    title: "Privy Embedded Wallets",
+    description:
+      "A wallet is created for you on login — defaulting to Monad Testnet — with a wrong-network guard and a one-click chain switch when you need it.",
+    tag: "UX",
+  },
+  {
+    icon: Globe,
+    title: "Multi-Chain Surfaces",
+    description:
+      "A bonus wallets page reads EVM, Solana, and Bitcoin balances, backed by a unified balance API and example Hardhat + Anchor programs.",
+    tag: "Extras",
+  },
 ];
 
-const containerVariants = {
-    hidden: { opacity: 1 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09 } },
 };
-
-const itemVariants = {
-    hidden: { opacity: 1, y: 0 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.5 }
-    }
+const item = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export default function CarbonFeatures() {
-    return (
-        <section className="w-full py-32 relative">
-            
-            {/* Background elements */}
-            <div className="absolute top-1/2 left-0 w-full h-[500px] bg-accent/5 -skew-y-6 transform origin-top-left pointer-events-none" />
+  return (
+    <section className="relative w-full overflow-hidden py-24 md:py-32">
+      <div className="pointer-events-none absolute right-0 top-1/4 h-72 w-72 rounded-full bg-accent/5 blur-[110px]" />
 
-            <div className="max-w-6xl mx-auto px-6 relative z-10">
-                {/* Section Header */}
-                <motion.div 
-                    initial={{ opacity: 1, y: 0 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.6 }}
-                    className="mb-20 text-center md:text-left"
-                >
-                    <p className="text-xs font-bold text-accent uppercase tracking-[0.2em] mb-4">Core Capabilities</p>
-                    <h2 className="text-4xl md:text-5xl font-bold text-primary tracking-tight max-w-2xl leading-tight">
-                        Engineered for High-Trust <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">Digital Transactions.</span>
-                    </h2>
-                </motion.div>
+      <div className="relative z-10 mx-auto max-w-content px-4 sm:px-6">
+        <div className="mb-14 flex flex-col items-start gap-5 md:mb-20 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+              Core Capabilities
+            </p>
+            <h2 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl md:text-5xl">
+              Engineered for{" "}
+              <span className="text-gradient">high-trust payouts</span>.
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm font-medium leading-relaxed text-fg-muted">
+            The boring parts hardware — payments, wallet config, verification —
+            are automated so you can focus on the work and the review.
+          </p>
+        </div>
 
-                {/* Feature Grid */}
-                <motion.div 
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-100px" }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                >
-                    {features.map((feature, i) => (
-                        <motion.div
-                            key={i}
-                            variants={itemVariants}
-                            className={`group relative overflow-hidden rounded-[24px] border border-brand-border bg-[#0f172a]/40 p-10 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 ${feature.border}`}
-                        >
-                            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            
-                            <div className={`mb-8 inline-flex p-3 rounded-2xl ${feature.bg} ring-1 ring-white/10 group-hover:ring-white/20 transition-all`}>
-                                <feature.icon className={`h-6 w-6 ${feature.color}`} />
-                            </div>
-                            <h3 className="text-xl font-bold text-primary mb-4 tracking-tight">{feature.title}</h3>
-                            <p className="text-sm font-medium text-primary/60 leading-relaxed max-w-sm">{feature.description}</p>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            </div>
-        </section>
-    );
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {features.map((f) => (
+            <motion.div
+              key={f.title}
+              variants={item}
+              className="group relative overflow-hidden rounded-[12px] border border-line bg-bg-elevated p-6 transition-all duration-300 hover:border-accent/40 hover:shadow-pop md:p-7"
+            >
+              <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="mb-6 inline-flex rounded-[10px] border border-accent/20 bg-accent-soft p-3 transition-transform duration-300 group-hover:-translate-y-0.5">
+                <f.icon className="h-5 w-5 text-accent" />
+              </div>
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-base font-bold tracking-tight text-fg">{f.title}</h3>
+                <span className="rounded-full border border-line bg-bg-overlay px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-fg-faint">
+                  {f.tag}
+                </span>
+              </div>
+              <p className="text-sm font-medium leading-relaxed text-fg-muted">{f.description}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
 }

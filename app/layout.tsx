@@ -1,24 +1,20 @@
 import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
-// We removed PrivyProvider import here to handle it cleanly or if it was causing issues, but usually we keep it. 
-// The user context didn't ask to remove providers, just style. 
-// However, the `replace_file_content` must work on the current file state. 
-// I will keep PrivyProvider if it's there. 
 import PrivyProvider from "./components/privy-provider";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { Toaster } from "./components/ui/Toast";
 
-import { Inter, Sora } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
-const APP_NAME = "Mon-E-Heist";
-const APP_DEFAULT_TITLE = "Mon-E-Heist";
-const APP_TITLE_TEMPLATE = "%s - Mon-E-Heist";
-const APP_DESCRIPTION = "An AI-powered bounty platform built with x402 on Monad.";
+const APP_NAME = "MonQuest";
+const APP_DEFAULT_TITLE = "MonQuest";
+const APP_TITLE_TEMPLATE = "%s · MonQuest";
+const APP_DESCRIPTION = "Monad-native bounties, judged by AI. Post, work, pay — onchain on Monad Testnet.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -35,10 +31,9 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: APP_DEFAULT_TITLE,
-    // startUpImage: [],
   },
   other: {
-    'mobile-web-app-capable': 'yes',
+    "mobile-web-app-capable": "yes",
   },
   formatDetection: {
     telephone: false,
@@ -63,10 +58,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "transparent" },
-    { media: "(prefers-color-scheme: dark)", color: "transparent" }
-  ],
+  themeColor: "#09090B",
 };
 
 export default function RootLayout({
@@ -90,16 +82,18 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${inter.variable} ${sora.variable} font-sans antialiased`} suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         <PrivyProvider>
           <div className="flex min-h-screen flex-col">
             <Navbar />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow" id="main">
+              {children}
+            </main>
             <Footer />
+            <Toaster />
           </div>
         </PrivyProvider>
       </body>
     </html>
   );
 }
-

@@ -73,17 +73,17 @@ export function WalletModal({
         {/* Funding Instructions */}
         <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <p className="text-sm font-medium text-amber-800">
-            💡 To create bounties or pay winners, you need MON tokens.
+            💡 To create bounties or pay winners, you need ETH (or the prize currency you&apos;ll post in).
           </p>
           <p className="mt-1 text-xs text-amber-600">
-            Send MON to your wallet address above, or use the Monad testnet faucet.
+            Send ETH to your wallet address above, or use an Ethereum faucet.
           </p>
         </div>
 
         {/* Actions */}
         <div className="space-y-3">
           <a
-            href={`https://testnet.monadexplorer.com/address/${walletAddress}`}
+            href={`https://etherscan.io/address/${walletAddress}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 hover:shadow-md no-underline"

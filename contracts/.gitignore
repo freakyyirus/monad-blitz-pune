@@ -1,0 +1,10 @@
+node_modules/
+artifacts/
+cache/
+typechain-types/
+dist/
+deployments.json
+.env*
+!.env.example
+coverage/
+coverage.json

@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { usePrivy, useWallets, type ConnectedWallet, type EIP1193Provider } from "@privy-io/react-auth";
 import type { Bounty } from "@/app/lib/db";
 import { Loader2, CheckCircle, ExternalLink, Wallet, ArrowLeft, Sparkles, X } from "lucide-react";
 import { parseEther } from "viem";
 import { MarkdownEditor, MarkdownViewer } from "@/app/components/MarkdownEditor";
 import { ConnectWalletPrompt } from "@/app/components/WalletModal";
+import { getPrizeCurrencySymbol } from "@/app/lib/blockchain/config";
+import { ensureMonadNetwork, WrongNetworkError } from "@/app/lib/payout";
+import { useToast } from "@/app/components/ui/Toast";
 import Link from "next/link";
 
 export default function BountyDetailPage({ params }: { params: { id: string } }) {
   const { authenticated, login, user, connectWallet } = usePrivy();
   const { wallets } = useWallets();
+  const { toast } = useToast();
+  const CURRENCY = getPrizeCurrencySymbol();
   const [bounty, setBounty] = useState<Bounty | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +34,10 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
 
   // Payout State
   const [paying, setPaying] = useState<string | null>(null);
+
+  // Wrong-network state (P5)
+  const [wrongNetwork, setWrongNetwork] = useState<{ current: number; expected: number } | null>(null);
+  const [isSwitching, setIsSwitching] = useState(false);
 
   // Wallet prompt state
   const [showWalletPrompt, setShowWalletPrompt] = useState(false);
@@ -60,11 +69,17 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
   const submissionAddress = user?.wallet?.address || wallet?.address;
 
   useEffect(() => {
-    fetch("/api/bounties")
-      .then((res) => res.json())
-      .then((data: Bounty[]) => {
-        const found = data.find((b) => b.id === params.id);
-        setBounty(found || null);
+    fetch(`/api/bounties/${params.id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch bounty");
+        return res.json();
+      })
+      .then((data: Bounty) => {
+        setBounty(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
         setLoading(false);
       });
   }, [params.id]);
@@ -81,6 +96,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
     setIsReviewDone(false);
     setShowAiPanel(true);
     setAiThinking("");
+    toast("AI review started", "info");
 
     try {
       const response = await fetch("/api/ai-review", {
@@ -102,15 +118,15 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
         setAiThinking((prev) => prev + text);
       }
 
-      const res = await fetch("/api/bounties");
-      const data = await res.json();
-      const found = data.find((b: Bounty) => b.id === params.id);
-      if (found) setBounty(found);
+      const res = await fetch(`/api/bounties/${params.id}`);
+      const data: Bounty = await res.json();
+      if (data) setBounty(data);
 
       setIsReviewDone(true);
 
     } catch (error) {
       console.error("AI Review error:", error);
+      toast("AI review failed", "error");
       setAiThinking((prev) => prev + "\n\n[Error: Failed to complete review]");
     } finally {
       setIsReviewing(false);
@@ -163,12 +179,35 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
       });
 
       if (res.ok) {
+        toast("Submission posted", "success");
         window.location.reload();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        toast(errorData.error || "Submission failed", "error");
       }
     } catch (error) {
       console.error(error);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  /** One-click switch to Monad from the wrong-network banner. */
+  const switchToMonad = async () => {
+    const swWallet = wallets.find(w => w.walletClientType !== "privy") || wallets[0];
+    if (!swWallet || !wrongNetwork) return;
+    setIsSwitching(true);
+    try {
+      const provider = (await swWallet.getEthereumProvider()) as EIP1193Provider;
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: `0x${wrongNetwork.expected.toString(16)}` }],
+      });
+      setWrongNetwork(null);
+    } catch (error) {
+      console.error("Switch failed:", error);
+    } finally {
+      setIsSwitching(false);
     }
   };
 
@@ -184,18 +223,22 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
     setPaying(submissionId);
 
     try {
-      const provider = await payingWallet.getEthereumProvider();
+      const provider = (await payingWallet.getEthereumProvider()) as EIP1193Provider;
 
+      // Wrong-network guard: do not proceed until we are on Monad Testnet.
       try {
-        await provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x279F" }],
-        });
-      } catch (switchError: any) {
-        console.log("Chain switch error (may be ok):", switchError.message);
+        await ensureMonadNetwork(provider);
+        setWrongNetwork(null);
+      } catch (err) {
+        if (err instanceof WrongNetworkError) {
+          setWrongNetwork({ current: err.currentChainId, expected: err.expectedChainId });
+          setPaying(null);
+          return;
+        }
+        throw err;
       }
 
-      await provider.request({
+      const txHash = (await provider.request({
         method: "eth_sendTransaction",
         params: [
           {
@@ -204,53 +247,92 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
             value: `0x${parseEther(bounty!.prize).toString(16)}`,
           },
         ],
-      });
+      })) as string;
 
-      await fetch("/api/bounties/payout", {
+      const res = await fetch("/api/bounties/payout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bountyId: bounty?.id,
-          submissionId: submissionId
+          submissionId,
+          chainId: 10143,
+          txHash,
         }),
       });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `Verification failed (${res.status})`);
+      }
+
+      toast("Payout recorded", "success");
       window.location.reload();
     } catch (error) {
       console.error(error);
-      alert("Payment failed or rejected.");
+      if (error instanceof WrongNetworkError) {
+        setWrongNetwork({ current: error.currentChainId, expected: error.expectedChainId });
+      } else {
+        alert("Payment failed or was not verified on-chain.");
+      }
     } finally {
       setPaying(null);
     }
   };
 
-  if (loading) return (
-    <div className="flex min-h-screen items-center justify-center bg-white">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    </div>
-  );
-
-  if (!bounty) return (
-    <div className="flex min-h-screen items-center justify-center bg-white text-gray-900">
-      Bounty not found
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-transparent">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+  
+  if (!bounty) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-transparent text-primary">
+        Bounty not found
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-4xl px-6">
         <Link href="/bounties" className="mb-8 inline-flex items-center text-[10px] font-bold text-primary/40 hover:text-primary uppercase tracking-widest no-underline transition-colors">
           <ArrowLeft className="mr-2 h-3 w-3" />
-          Registry / Browse Directives
+          Registry / Browse Bounties
         </Link>
 
+        {/* Wrong-network banner (P5) — shown before paying a winner. */}
+        {wrongNetwork && (
+          <div className="mb-8 border border-accent/30 bg-accent/10 p-6 rounded-xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold text-accent uppercase tracking-widest mb-1">
+                  Wrong network — chain {wrongNetwork.current}
+                </p>
+                <p className="text-xs font-medium text-accent/80">
+                  Your wallet is on chain {wrongNetwork.current}. Switch to Monad Testnet (chain {wrongNetwork.expected}) to pay the winner.
+                </p>
+              </div>
+              <button
+                onClick={switchToMonad}
+                disabled={isSwitching}
+                className="shrink-0 border border-accent bg-accent/20 px-4 py-2 text-[10px] font-bold text-accent uppercase tracking-widest transition-colors hover:bg-accent hover:text-white disabled:opacity-50"
+              >
+                {isSwitching ? "Switching…" : "Switch to Monad"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Header Card */}
-        <div className="mb-12 border border-brand-border bg-white p-10">
+        <div className="mb-12 border border-line bg-white p-10">
           <div className="mb-10 flex items-center justify-between">
             <span
               className={`border px-3 py-1 text-[10px] font-bold tracking-[0.15em] uppercase ${bounty.status === "OPEN"
                 ? "border-accent-success/20 bg-accent-success/5 text-accent-success"
-                : "border-brand-border bg-brand-paper text-primary/40"
+                : "border-line bg-bg-elevated text-primary/40"
                 }`}
             >
               Protocol Status: {bounty.status}
@@ -260,7 +342,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                 <button
                   onClick={handleAiReview}
                   disabled={isReviewing}
-                  className="flex items-center gap-2 border border-primary/10 bg-brand-paper px-4 py-2 text-[10px] font-bold text-primary uppercase tracking-widest transition-all hover:bg-white disabled:opacity-50"
+                  className="flex items-center gap-2 border border-primary/10 bg-bg-elevated px-4 py-2 text-[10px] font-bold text-primary uppercase tracking-widest transition-all hover:bg-white disabled:opacity-50"
                 >
                   {isReviewing ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -280,15 +362,15 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
             {bounty.title}
           </h1>
 
-          <div className="mb-12 border-l-2 border-brand-border pl-8 py-2">
+          <div className="mb-12 border-l-2 border-line pl-8 py-2">
             <MarkdownViewer content={bounty.description} className="prose-sm text-primary/70 leading-relaxed font-medium" />
           </div>
 
-          <div className="flex items-center justify-between pt-10 border-t border-brand-border">
+          <div className="flex items-center justify-between pt-10 border-t border-line">
             <div>
               <p className="text-[10px] font-bold text-primary/40 uppercase tracking-widest mb-1">Settlement Asset</p>
               <p className="text-3xl font-semibold text-primary tracking-tighter">
-                {bounty.prize} <span className="text-primary/40">MON</span>
+                {bounty.prize} <span className="text-primary/40">{CURRENCY}</span>
               </p>
             </div>
             <div className="text-right">
@@ -304,7 +386,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-lg font-semibold text-primary tracking-tight">
-              Registry Submissions
+              Submissions
             </h2>
             <span className="text-xs font-bold text-primary/30">{bounty.submissions.length} Found</span>
           </div>
@@ -318,8 +400,8 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                   className={`relative border p-10 transition-all ${isWinner
                     ? "border-accent-success bg-accent-success/5"
                     : sub.isAiSelected
-                      ? "border-primary/20 bg-brand-paper"
-                      : "border-brand-border bg-white"
+                      ? "border-primary/20 bg-bg-elevated"
+                      : "border-line bg-white"
                     }`}
                 >
                   {isWinner && (
@@ -348,12 +430,12 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
 
                   {sub.contact && (
                     <p className="mb-6 text-[10px] font-bold text-primary/30 uppercase tracking-[0.1em]">
-                      Registry Contact: <span className="text-primary/60">{sub.contact}</span>
+                      Contact: <span className="text-primary/60">{sub.contact}</span>
                     </p>
                   )}
 
                   {sub.aiFeedback && (
-                    <div className="mb-8 border border-primary/10 bg-brand-paper/50 p-6">
+                    <div className="mb-8 border border-primary/10 bg-bg-elevated/50 p-6">
                       <p className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
                         <Sparkles className="h-3 w-3" /> Machine Analysis
                       </p>
@@ -381,8 +463,8 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
               );
             })}
             {bounty.submissions.length === 0 && (
-              <div className="border border-brand-border bg-brand-paper/50 p-12 text-center">
-                <p className="text-xs font-medium text-primary/30 tracking-tight uppercase">No records found in directive registry.</p>
+              <div className="border border-line bg-bg-elevated/50 p-12 text-center">
+                <p className="text-xs font-medium text-primary/30 tracking-tight uppercase">No submissions yet.</p>
               </div>
             )}
           </div>
@@ -390,9 +472,9 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
 
         {/* Submission Form */}
         {!isCreator && bounty.status === "OPEN" && (
-          <div className="border border-brand-border bg-white p-10">
+          <div className="border border-line bg-white p-10">
             <h3 className="mb-8 text-lg font-semibold text-primary tracking-tight">
-              Fulfillment Submission
+              Work Submission
             </h3>
             {!authenticated ? (
               <button
@@ -405,7 +487,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
               <form onSubmit={handleSubmitWork} className="space-y-8">
                 <div>
                   <MarkdownEditor
-                    label="Technical Documentation / Proof of Fulfillment"
+                    label="Technical Documentation / Proof of Work"
                     value={submissionContent}
                     onChange={setSubmissionContent}
                     placeholder="Provide detailed documentation of the completed task..."
@@ -417,7 +499,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                   </label>
                   <input
                     type="text"
-                    className="w-full border border-brand-border bg-brand-paper/30 px-4 py-4 text-xs font-semibold text-primary placeholder-primary/20 focus:border-primary focus:outline-none transition-all"
+                    className="w-full border border-line bg-bg-elevated/30 px-4 py-4 text-xs font-semibold text-primary placeholder-primary/20 focus:border-primary focus:outline-none transition-all"
                     placeholder="Email, PGP, or handle"
                     value={contactInfo}
                     onChange={(e) => setContactInfo(e.target.value)}
@@ -431,7 +513,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
                   {submitting ? (
                     <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    "Register Fulfillment"
+                    "Submit Work"
                   )}
                 </button>
 
@@ -552,7 +634,7 @@ export default function BountyDetailPage({ params }: { params: { id: string } })
           title={walletPromptAction === "pay" ? "Connect Wallet to Pay" : "Connect Wallet"}
           description={
             walletPromptAction === "pay"
-              ? "You need to connect a wallet with MON tokens to pay the winner."
+              ? `You need to connect a wallet with ${CURRENCY} tokens to pay the winner.`
               : "Connect your wallet to submit work. Prize winnings will be sent to your connected wallet."
           }
         />

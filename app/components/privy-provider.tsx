@@ -21,6 +21,10 @@ export default function PrivyProvider({
         appearance: {
           showWalletLoginFirst: false,
         },
+        // The bounty x402 + winnder-pay flow runs on Monad Testnet (10143 / 0x279F).
+        // Enable the same network in the Privy dashboard:
+        //   App → Embedded wallets → Networks → Monad Testnet.
+        // Before first login, sidebar prompts "Add ISC/RPC" if not enabled there.
         defaultChain: monadTestnet,
         supportedChains: [monadTestnet],
       }}

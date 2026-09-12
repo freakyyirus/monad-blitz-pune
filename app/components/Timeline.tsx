@@ -1,90 +1,114 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Code, CheckCircle, Cpu, Coins } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
+import { Code, CheckCircle2, Cpu, Coins } from "lucide-react";
 
 const steps = [
-    {
-        title: "Create Directive",
-        description: "Post a technical bounty with specific requirements and a MON token prize pool. Locked securely on-chain.",
-        icon: Code,
-        color: "text-blue-400"
-    },
-    {
-        title: "Hunters Submit",
-        description: "Developers worldwide claim the task and submit their solutions directly through the protocol.",
-        icon: CheckCircle,
-        color: "text-purple-400"
-    },
-    {
-        title: "AI Validation",
-        description: "Gemini 1.5 Flash instantly reviews all submissions, verifying code quality and requirement satisfaction.",
-        icon: Cpu,
-        color: "text-pink-400"
-    },
-    {
-        title: "Instant Settlement",
-        description: "The creator approves the best work, triggering a sub-second payout directly to the hunter's wallet via Monad.",
-        icon: Coins,
-        color: "text-emerald-400"
-    }
+  {
+    number: "01",
+    title: "Post a Bounty",
+    description:
+      "Describe the task, set a prize in MON, and settle a 0.001 MON x402 fee. The server verifies the payment on Monad before your bounty goes live on the registry.",
+    icon: Code,
+  },
+  {
+    number: "02",
+    title: "Hunters Submit",
+    description:
+      "Developers claim the task and submit markdown write-ups with screenshots attached — previewed live before they hit the registry.",
+    icon: CheckCircle2,
+  },
+  {
+    number: "03",
+    title: "AI Audit",
+    description:
+      "Hit one button and Gemini 2.5 Flash streams a ranked top-3 with crisp feedback per submission, weighing the screenshots too.",
+    icon: Cpu,
+  },
+  {
+    number: "04",
+    title: "Instant Settlement",
+    description:
+      "Approve the winner and the UI sends the payout. The server verifies recipient + amount on-chain, then flips the bounty to PAID.",
+    icon: Coins,
+  },
 ];
 
+const lineItem: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: (custom: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, delay: custom * 0.1, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
 export default function Timeline() {
-    return (
-        <section className="w-full py-32 border-t border-brand-border/30 relative overflow-hidden">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full filter blur-[150px] pointer-events-none" />
+  return (
+    <section className="relative w-full overflow-hidden py-24 md:py-32">
+      <div className="pointer-events-none absolute -right-24 top-10 h-80 w-80 rounded-full bg-accent/5 blur-[120px]" />
 
-            <div className="max-w-4xl mx-auto px-6 relative z-10">
-                <motion.div 
-                    initial={{ opacity: 1, y: 0 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    className="text-center mb-24"
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
+        <div className="mb-14 text-center md:mb-20">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+            The Flow
+          </p>
+          <h2 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl md:text-5xl">
+            From spec to cheque in{" "}
+            <span className="text-gradient">four steps</span>.
+          </h2>
+        </div>
+
+        <div className="relative">
+          {/* Vertical rail — left on mobile, center on md+ */}
+          <div className="absolute bottom-2 left-[19px] top-2 w-px bg-gradient-to-b from-accent/0 via-line-strong to-accent/0 md:left-1/2 md:-translate-x-1/2" />
+
+          <div className="flex flex-col gap-10 md:gap-16">
+            {steps.map((step, index) => {
+              const leftSide = index % 2 === 0;
+              return (
+                <motion.div
+                  key={step.number}
+                  custom={index}
+                  variants={lineItem}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, margin: "-90px" }}
+                  className={`relative flex items-start gap-6 pl-12 md:gap-0 md:pl-0 ${
+                    leftSide ? "" : ""
+                  }`}
                 >
-                    <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tight">
-                        A Frictionless <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-light">Lifecycle.</span>
-                    </h2>
+                  {/* Node */}
+                  <div
+                    className={`absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full border border-accent/30 bg-bg-elevated shadow-[0_0_18px_rgba(22,163,74,0.25)] md:left-1/2 md:-translate-x-1/2`}
+                  >
+                    <step.icon className="h-5 w-5 text-accent" />
+                  </div>
+
+                  {/* Card — right side always on mobile; alternate on md+ */}
+                  <div
+                    className={`w-full md:w-[calc(50%-3rem)] ${
+                      leftSide ? "md:mr-auto md:text-right" : "md:ml-auto"
+                    }`}
+                  >
+                    <div className="glass rounded-[12px] border border-line p-5 transition-colors duration-300 hover:border-accent/40 md:p-6">
+                      <span className="mb-2 inline-block text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+                        Step {step.number}
+                      </span>
+                      <h3 className="mb-2 text-lg font-bold tracking-tight text-fg md:text-xl">
+                        {step.title}
+                      </h3>
+                      <p className="text-sm font-medium leading-relaxed text-fg-muted">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
                 </motion.div>
-
-                <div className="relative border-l border-brand-border/50 md:border-none">
-                    {/* Center line for desktop */}
-                    <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-brand-border/50 -translate-x-1/2" />
-
-                    {steps.map((step, index) => (
-                        <div key={index} className="relative flex flex-col md:flex-row items-center justify-between mb-16 md:mb-24 last:mb-0">
-                            
-                            {/* Left Side Content (Evens) */}
-                            <div className={`w-full md:w-5/12 pl-8 md:pl-0 ${index % 2 === 0 ? "md:text-right md:pr-12" : "md:order-3 md:text-left md:pl-12"} mb-4 md:mb-0`}>
-                                <motion.div
-                                    initial={{ opacity: 1, x: 0 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true, margin: "-100px" }}
-                                    transition={{ duration: 0.6, delay: 0.2 }}
-                                >
-                                    <h3 className="text-xl md:text-2xl font-bold text-primary mb-3 tracking-tight">{step.title}</h3>
-                                    <p className="text-sm font-medium text-primary/60 leading-relaxed">{step.description}</p>
-                                </motion.div>
-                            </div>
-
-                            {/* Node */}
-                            <motion.div 
-                                initial={{ opacity: 1, scale: 1 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true, margin: "-100px" }}
-                                transition={{ duration: 0.5, type: "spring" }}
-                                className={`absolute left-0 md:left-1/2 -translate-x-[5px] md:-translate-x-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full bg-[#0a0f24] border-2 border-brand-border flex items-center justify-center shadow-[0_0_20px_rgba(91,77,255,0.2)] md:order-2 z-10`}
-                            >
-                                <step.icon className={`w-5 h-5 md:w-6 md:h-6 ${step.color}`} />
-                            </motion.div>
-
-                            {/* Empty space for grid layout */}
-                            <div className={`hidden md:block w-5/12 ${index % 2 === 0 ? "order-3" : "order-1"}`} />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

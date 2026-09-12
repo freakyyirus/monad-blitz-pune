@@ -1,0 +1,23 @@
+{
+  "name": "monquest-solana-program",
+  "version": "0.1.0",
+  "description": "MonQuest Anchor program (counter) + client-side IDL usage",
+  "private": true,
+  "scripts": {
+    "build": "anchor build",
+    "deploy": "anchor deploy",
+    "test": "anchor test",
+    "client": "tsx app/monquest_counter.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.30.1",
+    "@solana/web3.js": "1.99.0"
+  },
+  "devDependencies": {
+    "chai": "5.2.0",
+    "mocha": "11.7.1",
+    "ts-node": "10.9.2",
+    "tsx": "4.23.13",
+    "typescript": "5.6.3"
+  }
+}

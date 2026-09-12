@@ -5,77 +5,110 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
-    {
-        question: "What is Mon-E-Heist?",
-        answer: "Mon-E-Heist is a premium Web3 platform built on the Monad blockchain that allows creators to post technical bounties and developers to solve them for instant crypto payouts."
-    },
-    {
-        question: "How does the AI review system work?",
-        answer: "We integrate Google's Gemini 1.5 Flash to automatically review all code and text submissions. It acts as an unbiased judge, scoring submissions based on requirements and providing detailed feedback instantly."
-    },
-    {
-        question: "Do I need a crypto wallet to participate?",
-        answer: "No prior setup is required! We use Privy to automatically provision a secure embedded wallet for you when you sign in with an email or social account. You can also connect an external wallet like MetaMask if you prefer."
-    },
-    {
-        question: "How fast are payouts?",
-        answer: "Because we are built on Monad's parallel EVM architecture, settlements are virtually instant. Once a creator approves a submission, the smart contract transfers the MON prize to the winner in under a second."
-    }
+  {
+    question: "What is MonQuest?",
+    answer:
+      "MonQuest is a Monad-native bounty marketplace. Creators post technical tasks for a flat 0.001 MON x402 fee, hunters submit markdown + screenshots, and Gemini 2.5 Flash ranks the work. The winner is paid wallet-to-wallet on Monad Testnet.",
+  },
+  {
+    question: "What is the x402 platform fee?",
+    answer:
+      "Publishing a bounty costs a flat 0.001 MON, requested through the x402 payment protocol: the server replies with HTTP 402 + payment details, your wallet signs a native transfer, and the tx is verified on-chain (recipient, amount, and receipt) before your bounty appears.",
+  },
+  {
+    question: "How does the AI review work?",
+    answer:
+      "Creators run a one-click audit powered by Gemini 2.5 Flash. It streams a ranked top-3 with per-submission feedback, and screenshots embedded in submissions are included in the evaluation.",
+  },
+  {
+    question: "Do I need a crypto wallet to participate?",
+    answer:
+      "No setup is required. Privy provisions a secure embedded wallet for you on sign-in, defaulting to Monad Testnet. If the network is wrong, the app shows a guard banner with a one-click switch.",
+  },
+  {
+    question: "How are winners paid?",
+    answer:
+      "Wallet-to-wallet. The creator sends the prize from the app, and the server verifies the payout transaction on-chain — recipient must be the winning hunter, value must cover the prize — before the bounty flips to PAID.",
+  },
+  {
+    question: "What about Ethereum, Solana, and Bitcoin?",
+    answer:
+      "They're surfaced as a bonus multi-chain wallets page (balances for EVM, SOL, and BTC) with example Hardhat and Anchor programs. The core bounty + payment loop runs entirely on Monad Testnet.",
+  },
 ];
 
 export default function FaqAccordion() {
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-    const toggleFaq = (index: number) => {
-        setOpenIndex(openIndex === index ? null : index);
-    };
+  const toggleFaq = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
-    return (
-        <section className="w-full py-32 border-t border-brand-border/30 relative">
-            <div className="max-w-3xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold text-primary tracking-tight mb-4">
-                        Protocol Questions
-                    </h2>
-                    <p className="text-primary/60 font-medium text-sm md:text-base">Everything you need to know about the platform.</p>
-                </div>
+  return (
+    <section className="relative w-full py-24 md:py-32">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="mb-12 text-center"
+        >
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+            Common questions
+          </p>
+          <h2 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl md:text-5xl">
+            Protocol <span className="text-gradient">FAQ</span>.
+          </h2>
+        </motion.div>
 
-                <div className="space-y-4">
-                    {faqs.map((faq, index) => {
-                        const isOpen = openIndex === index;
-                        return (
-                            <div 
-                                key={index} 
-                                className="border border-brand-border/50 bg-[#0f172a]/30 backdrop-blur-md rounded-2xl overflow-hidden transition-colors hover:border-brand-border"
-                            >
-                                <button
-                                    onClick={() => toggleFaq(index)}
-                                    className="w-full flex items-center justify-between p-6 text-left"
-                                >
-                                    <span className="text-base font-semibold text-primary">{faq.question}</span>
-                                    <ChevronDown 
-                                        className={`w-5 h-5 text-primary/50 transition-transform duration-300 ${isOpen ? "rotate-180 text-accent" : ""}`} 
-                                    />
-                                </button>
-                                <AnimatePresence initial={false}>
-                                    {isOpen && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                                        >
-                                            <div className="px-6 pb-6 pt-0 text-sm text-primary/60 leading-relaxed font-medium">
-                                                {faq.answer}
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </section>
-    );
+        <div className="space-y-3">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <motion.div
+                key={faq.question}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className={`overflow-hidden rounded-[10px] border transition-colors duration-200 ${
+                  isOpen ? "border-accent/40 bg-bg-elevated" : "border-line bg-bg-elevated hover:border-line-strong"
+                }`}
+              >
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="flex w-full items-center justify-between gap-4 p-5 text-left"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-sm font-semibold tracking-tight text-fg sm:text-base">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-fg-faint transition-transform duration-300 ${
+                      isOpen ? "rotate-180 text-accent" : ""
+                    }`}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <p className="px-5 pb-5 text-sm font-medium leading-relaxed text-fg-muted">
+                        {faq.answer}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
 }

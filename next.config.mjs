@@ -10,10 +10,4 @@ const withSerwist = withSerwistInit({
 export default withSerwist({
   // Your Next.js config
   transpilePackages: ["geist"],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 });

@@ -1,0 +1,24 @@
+{
+  "name": "monquest-hardhat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MonQuest example Solidity contracts (ERC-20 + SimpleStorage)",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts",
+    "deploy:local": "hardhat run scripts/deploy.ts --network anvil",
+    "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
+    "interact": "hardhat run scripts/interact.ts",
+    "verify": "hardhat verify"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "5.0.0",
+    "dotenv": "17.4.2",
+    "hardhat": "2.29.1",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "ethers": "6.14.0"
+  }
+}

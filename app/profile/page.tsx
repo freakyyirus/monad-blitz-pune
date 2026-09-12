@@ -5,6 +5,7 @@ import { usePrivy, useWallets } from "@privy-io/react-auth";
 import Link from "next/link";
 import { Loader2, ArrowRight, Trophy, Send, Wallet, Copy, Check, LogOut, Plus } from "lucide-react";
 import { WalletModal } from "@/app/components/WalletModal";
+import { getPrizeCurrencySymbol } from "@/app/lib/blockchain/config";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Bounty {
@@ -85,30 +86,30 @@ export default function ProfilePage() {
 
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center bg-transparent">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
       </div>
     );
   }
 
   if (!authenticated) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 text-center">
-        <div className="card rounded-2xl p-10 max-w-md">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50">
-            <Wallet className="h-7 w-7 text-blue-500" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-transparent px-4 text-center">
+        <div className="card rounded-[24px] p-10 max-w-md border border-line bg-[#0f172a]/80 backdrop-blur-xl">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10 border border-accent/20">
+            <Wallet className="h-8 w-8 text-accent" />
           </div>
-          <h1 className="mb-3 text-2xl font-extrabold text-gray-900">
-            Sign in to view profile
+          <h1 className="mb-3 text-2xl font-bold tracking-tight text-primary">
+            Access Restricted
           </h1>
-          <p className="mb-8 text-gray-500">
-            Connect your wallet to manage bounties and submissions.
+          <p className="mb-8 text-sm font-medium text-primary/60 leading-relaxed">
+            Please authorize your session by connecting a wallet to manage your directives and submissions.
           </p>
           <button
             onClick={login}
-            className="btn-primary text-sm"
+            className="btn-primary w-full"
           >
-            Connect Wallet
+            Initialize Session
           </button>
         </div>
       </div>
@@ -119,7 +120,7 @@ export default function ProfilePage() {
     <div className="min-h-screen pt-24 pb-16">
       <div className="mx-auto max-w-6xl px-6">
         {/* Profile Header */}
-        <div className="mb-12 border-b border-brand-border pb-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+        <div className="mb-12 border-b border-line pb-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-[10px] font-bold text-accent uppercase tracking-widest mb-3">Identity Management</p>
             <h1 className="text-4xl font-medium tracking-tighter text-primary">System Profile</h1>
@@ -127,7 +128,7 @@ export default function ProfilePage() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {/* Embedded Wallet Card */}
               {embeddedWallet && (
-                <div className="border border-brand-border bg-white p-5 group transition-colors hover:bg-brand-paper/50">
+                <div className="border border-line bg-white p-5 group transition-colors hover:bg-bg-elevated/60">
                   <div className="mb-4 flex items-center justify-between gap-6">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 border border-primary/10">
@@ -162,7 +163,7 @@ export default function ProfilePage() {
 
               {/* External Wallets */}
               {externalWallets.map((w) => (
-                <div key={w.address} className="border border-brand-border bg-brand-paper/50 p-5 hover:bg-white transition-colors">
+                <div key={w.address} className="border border-line bg-bg-elevated/60 p-5 hover:bg-white transition-colors">
                   <div className="mb-4 flex items-center justify-between gap-6">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 border border-primary/20">
@@ -193,7 +194,7 @@ export default function ProfilePage() {
 
               <button
                 onClick={connectWallet}
-                className="flex h-[94px] w-[94px] flex-col items-center justify-center gap-2 border border-dashed border-brand-border bg-brand-paper/30 text-[8px] font-bold text-primary/30 uppercase tracking-[0.2em] transition-all hover:bg-white hover:border-primary/20 hover:text-primary"
+                className="flex h-[94px] w-[94px] flex-col items-center justify-center gap-2 border border-dashed border-line bg-bg-elevated/40 text-[8px] font-bold text-primary/30 uppercase tracking-[0.2em] transition-all hover:bg-white hover:border-primary/20 hover:text-primary"
               >
                 <Plus className="h-4 w-4" />
                 Attach
@@ -203,7 +204,7 @@ export default function ProfilePage() {
 
           <button
             onClick={logout}
-            className="flex items-center gap-2 border border-brand-border bg-white px-5 py-3 text-[10px] font-bold text-primary/40 uppercase tracking-widest transition-all hover:bg-accent/5 hover:text-accent hover:border-accent/20"
+            className="flex items-center gap-2 border border-line bg-white px-5 py-3 text-[10px] font-bold text-primary/40 uppercase tracking-widest transition-all hover:bg-accent/5 hover:text-accent hover:border-accent/20"
           >
             <LogOut className="h-3.5 w-3.5" />
             Deauthorize Session
@@ -211,7 +212,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-10 border-b border-brand-border overflow-x-auto scrollbar-hide">
+        <div className="mb-10 border-b border-line overflow-x-auto scrollbar-hide">
           <div className="flex gap-6 md:gap-10 min-w-max">
             <button
               onClick={() => setActiveTab("created")}
@@ -220,7 +221,7 @@ export default function ProfilePage() {
                 : "text-primary/30 hover:text-primary/60"
                 }`}
             >
-              Master Directives
+              Master Bounties
               <span className="ml-3 font-mono text-primary/40">
                 [{createdBounties.length}]
               </span>
@@ -235,7 +236,7 @@ export default function ProfilePage() {
                 : "text-primary/30 hover:text-primary/60"
                 }`}
             >
-              Fulfillment Log
+              Submission Log
               <span className="ml-3 font-mono text-primary/40">
                 [{participatedBounties.length}]
               </span>
@@ -259,11 +260,11 @@ export default function ProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="grid gap-1 bg-brand-border border border-brand-border"
+              className="grid gap-1 bg-line border border-line"
             >
               {(activeTab === "created" ? createdBounties : participatedBounties).length === 0 ? (
-                <div className="bg-brand-paper/50 flex flex-col items-center justify-center py-32 text-center">
-                  <div className="mb-6 flex items-center justify-center border border-brand-border bg-white p-5 text-primary/10">
+                <div className="bg-bg-elevated/60 flex flex-col items-center justify-center py-32 text-center">
+                  <div className="mb-6 flex items-center justify-center border border-line bg-white p-5 text-primary/10">
                     {activeTab === "created" ? (
                       <Trophy className="h-8 w-8" />
                     ) : (
@@ -275,15 +276,15 @@ export default function ProfilePage() {
                   </h3>
                   <p className="mt-2 text-[10px] font-medium text-primary/30 uppercase tracking-tight">
                     {activeTab === "created"
-                      ? "No primary directives initialized by this identity."
-                      : "No fulfillment records associated with this identity."}
+                      ? "No bounties posted by this account yet."
+                      : "No submissions associated with this account."}
                   </p>
                   {activeTab === "created" && (
                     <Link
                       href="/create"
                       className="mt-10 btn-primary px-8 text-[10px] tracking-widest no-underline"
                     >
-                      Initialize Directive
+                      Post a Bounty
                     </Link>
                   )}
                 </div>
@@ -292,7 +293,7 @@ export default function ProfilePage() {
                   <Link
                     key={bounty.id}
                     href={`/bounties/${bounty.id}`}
-                    className="group flex items-center justify-between bg-brand-paper p-8 hover:bg-white transition-colors no-underline"
+                    className="group flex items-center justify-between bg-bg-elevated p-8 hover:bg-white transition-colors no-underline"
                   >
                     <div>
                       <div className="mb-3 flex items-center gap-4">
@@ -302,7 +303,7 @@ export default function ProfilePage() {
                         <span
                           className={`border px-2.5 py-0.5 text-[8px] font-bold uppercase tracking-widest ${bounty.status === "OPEN"
                             ? "bg-accent-success/5 border-accent-success/20 text-accent-success"
-                            : "bg-brand-paper border-brand-border text-primary/30"
+                            : "bg-bg-elevated border-line text-primary/30"
                             }`}
                         >
                           {bounty.status}
@@ -317,7 +318,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-8 text-right">
                       <div className="space-y-1">
                         <p className="text-[8px] font-bold text-primary/30 uppercase tracking-widest">SETTLEMENT</p>
-                        <p className="text-lg font-semibold text-primary tracking-tighter">{bounty.prize} MON</p>
+                        <p className="text-lg font-semibold text-primary tracking-tighter">{bounty.prize} {getPrizeCurrencySymbol()}</p>
                       </div>
                       <ArrowRight className="h-4 w-4 text-primary/10 group-hover:text-primary transition-colors" />
                     </div>

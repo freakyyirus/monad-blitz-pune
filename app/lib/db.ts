@@ -1,4 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
+import { decorateSupabaseError } from "./supabase-guard";
+
+/** Raises a supabase error with a stable code + hint (see supabase-guard.ts). */
+const throwDbError = (error: unknown): never => {
+  throw decorateSupabaseError(error);
+};
 
 export const getSupabaseAdminClient = () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -50,9 +56,9 @@ export const db = {
       .select("*, submissions:submissions!submissions_bounty_id_fkey(*)")
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) throwDbError(error);
 
-    return data.map((b: any) => ({
+    return (data ?? []).map((b: any) => ({
       id: b.id,
       title: b.title,
       description: b.description,
@@ -131,7 +137,7 @@ export const db = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) throwDbError(error);
     return {
       id: data.id,
       title: data.title,
@@ -166,7 +172,7 @@ export const db = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) throwDbError(error);
     return {
       id: data.id,
       hunterAddress: data.hunter_address,
@@ -189,7 +195,47 @@ export const db = {
       .update(updateData)
       .eq("id", bountyId);
 
-    if (error) throw error;
+    if (error) throwDbError(error);
+  },
+
+  /**
+   * Compensating store: a bounty was PAID for (x402 fee received on Monad) but
+   * the bounties insert failed. Persist the record so the data survives for an
+   * operator to reconcile. Throws if the pending_bounties table is missing.
+   */
+  savePendingBounty: async (bounty: {
+    title: string;
+    description: string;
+    prize: string;
+    creatorAddress: string;
+    userId?: string;
+    txHash: string;
+  }) => {
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase.from("pending_bounties").insert([
+      {
+        title: bounty.title,
+        description: bounty.description,
+        prize: bounty.prize,
+        creator_address: normalizeAddress(bounty.creatorAddress),
+        user_id: bounty.userId,
+        tx_hash: bounty.txHash,
+        status: "needs_attention",
+      },
+    ]);
+
+    if (error) throwDbError(error);
+  },
+
+  getBountyBySubmission: async (submissionId: string) => {
+    const supabase = getSupabaseAdminClient();
+    const { data: submission, error: subError } = await supabase
+      .from("submissions")
+      .select("bounty_id")
+      .eq("id", submissionId)
+      .single();
+    if (subError || !submission) return undefined;
+    return db.getBounty(submission.bounty_id);
   },
 
   // Get bounties by user ID OR any of their wallet addresses
@@ -223,7 +269,7 @@ export const db = {
       .or(conditions.join(","))
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) throwDbError(error);
 
     return (data || []).map((b: any) => ({
       id: b.id,
@@ -282,7 +328,7 @@ export const db = {
       .in("id", bountyIds)
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) throwDbError(error);
 
     return (data || []).map((b: any) => ({
       id: b.id,

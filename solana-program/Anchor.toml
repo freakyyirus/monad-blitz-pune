@@ -1,0 +1,16 @@
+[features]
+resolver = "2"
+
+[programs.localnet]
+monquest_counter = "4bEizfTQRQDRVptCzft1kAPvRprrzk3VJunj15ZYemjg"
+
+[programs.devnet]
+monquest_counter = "4bEizfTQRQDRVptCzft1kAPvRprrzk3VJunj15ZYemjg"
+
+[provider]
+# Local validator wallet. Create one with: solana-keygen new -o wallet.json
+cluster = "localnet"
+wallet = "wallet.json"
+
+[scripts]
+test = "yarn ts-mocha -p ./tsconfig.json tests/*.ts"

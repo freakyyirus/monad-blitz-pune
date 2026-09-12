@@ -1,0 +1,161 @@
+MonQuest project tree (excludes node_modules, .next, .git, build/cache output)
+
+MonQuest/
+├── app/
+│   ├── api/
+│   │   ├── ai-review/
+│   │   │   └── route.ts
+│   │   ├── blockchain/
+│   │   │   └── balances/
+│   │   │       └── route.ts
+│   │   ├── bounties/
+│   │   │   ├── payout/
+│   │   │   │   └── route.ts
+│   │   │   └── route.ts
+│   │   ├── profile/
+│   │   │   └── route.ts
+│   │   └── submissions/
+│   │       └── route.ts
+│   ├── bounties/
+│   │   ├── [id]/
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── solana/
+│   │   │   └── SolanaWalletProvider.tsx
+│   │   ├── ui/
+│   │   │   ├── Button.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   ├── Input.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   ├── Skeleton.tsx
+│   │   │   ├── StatusPill.tsx
+│   │   │   ├── Tabs.tsx
+│   │   │   ├── Textarea.tsx
+│   │   │   ├── Toast.tsx
+│   │   │   └── Tooltip.tsx
+│   │   ├── CarbonFeatures.tsx
+│   │   ├── CarbonHero.tsx
+│   │   ├── FaqAccordion.tsx
+│   │   ├── Footer.tsx
+│   │   ├── InstallPWA.tsx
+│   │   ├── Logo.tsx
+│   │   ├── MarkdownEditor.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── SendNotification.tsx
+│   │   ├── Timeline.tsx
+│   │   ├── UseLoginPrivy.tsx
+│   │   ├── WalletModal.tsx
+│   │   └── privy-provider.tsx
+│   ├── create/
+│   │   └── page.tsx
+│   ├── fonts/
+│   │   ├── GeistMonoVF.woff
+│   │   └── GeistVF.woff
+│   ├── hooks/
+│   │   ├── useSolanaWallet.ts
+│   │   └── useWalletReady.ts
+│   ├── lib/
+│   │   ├── blockchain/
+│   │   │   ├── btc.ts
+│   │   │   ├── config.ts
+│   │   │   ├── evm.ts
+│   │   │   ├── index.ts
+│   │   │   ├── solana.ts
+│   │   │   └── types.ts
+│   │   ├── db.ts
+│   │   ├── env.ts
+│   │   ├── payout.ts
+│   │   ├── supabase-client.ts
+│   │   ├── supabase-guard.ts
+│   │   ├── tokens.ts
+│   │   └── utils.ts
+│   ├── notification/
+│   │   └── route.ts
+│   ├── profile/
+│   │   └── page.tsx
+│   ├── wallets/
+│   │   ├── WalletDashboard.tsx
+│   │   └── page.tsx
+│   ├── ~offline/
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── sw.ts
+├── contracts/
+│   ├── contracts/
+│   │   ├── MonQuestToken.sol
+│   │   └── SimpleStorage.sol
+│   ├── scripts/
+│   │   ├── deploy.ts
+│   │   └── interact.ts
+│   ├── test/
+│   │   ├── MonQuestToken.test.ts
+│   │   └── SimpleStorage.test.ts
+│   ├── deployments.json
+│   ├── hardhat.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   └── tsconfig.json
+├── public/
+│   ├── icons/
+│   │   ├── android-chrome-192x192.png
+│   │   ├── apple-touch-icon.png
+│   │   └── icon-512x512.png
+│   ├── brain.svg
+│   ├── crown.svg
+│   ├── dark-gradient.jpg
+│   ├── landing.mp4
+│   ├── manifest.json
+│   ├── monarch_hero_bg.png
+│   └── sw.js
+├── scripts/
+│   ├── chain-local.sh
+│   ├── chain-stop.sh
+│   ├── demo-evm.ts
+│   ├── demo-solana.ts
+│   └── demo.ts
+├── solana-program/
+│   ├── app/
+│   │   └── monquest_counter.ts
+│   ├── migrations/
+│   │   └── deploy.ts
+│   ├── programs/
+│   │   └── monquest-counter/
+│   │       ├── src/
+│   │       │   └── lib.rs
+│   │       └── Cargo.toml
+│   ├── tests/
+│   │   └── counter.ts
+│   ├── Anchor.toml
+│   ├── README.md
+│   ├── package-lock.json
+│   ├── package.json
+│   └── tsconfig.json
+├── supabase/
+│   ├── migrations/
+│   │   ├── 001_schema.sql
+│   │   ├── 002_user_id.sql
+│   │   ├── 003_ai_review.sql
+│   │   └── 004_winner.sql
+│   └── README.md
+├── Monquest.code-workspace
+├── PROGRESS.md
+├── README.md
+├── SECURITY.md
+├── instrumentation.ts
+├── next-env.d.ts
+├── next.config.mjs
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── supabase_migration_ai_review.sql
+├── supabase_migration_user_id.sql
+├── supabase_migration_winner.sql
+├── supabase_schema.sql
+├── tailwind.config.ts
+├── tsconfig.json
+├── tsconfig.tsbuildinfo
+└── wipe_data.sql

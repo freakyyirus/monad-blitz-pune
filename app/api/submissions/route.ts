@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/lib/db";
+import { decorateSupabaseError } from "@/app/lib/supabase-guard";
 
 export async function POST(req: NextRequest) {
   try {
@@ -7,18 +8,28 @@ export async function POST(req: NextRequest) {
     const { bountyId, hunterAddress, content, contact, userId } = body;
 
     if (!bountyId || !hunterAddress || !content) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing fields", code: "MISSING_FIELDS", hint: "bountyId, hunterAddress and content are required." },
+        { status: 400 },
+      );
     }
 
     const submission = await db.addSubmission(bountyId, {
       hunterAddress,
       content,
       contact: contact || "",
-      userId, // Include Privy user ID for tracking
+      userId,
     });
 
     return NextResponse.json(submission, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to submit" }, { status: 500 });
+    const decorated = decorateSupabaseError(error);
+    console.error("Submission error:", decorated);
+    const code = (decorated as { code?: string }).code;
+    const hint = (decorated as { hint?: string }).hint;
+    return NextResponse.json(
+      { error: "Failed to submit.", code, hint },
+      { status: code === "SUPABASE_MIGRATIONS_REQUIRED" ? 503 : 500 },
+    );
   }
 }

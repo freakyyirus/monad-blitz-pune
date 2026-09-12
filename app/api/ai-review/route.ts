@@ -8,7 +8,14 @@ export async function POST(req: NextRequest) {
     const { bountyId } = await req.json();
 
     if (!process.env.GOOGLE_GEMINI_API_KEY) {
-      return NextResponse.json({ error: "Gemini API Key not configured" }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: "AI review not configured",
+          code: "GEMINI_NOT_CONFIGURED",
+          hint: "Set GOOGLE_GEMINI_API_KEY in .env.local (see .env.example).",
+        },
+        { status: 500 },
+      );
     }
 
     // 1. Verify Bounty
@@ -19,7 +26,10 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (bountyError || !bounty) {
-      return NextResponse.json({ error: "Bounty not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Bounty not found", code: "BOUNTY_NOT_FOUND", hint: "Check the bounty id." },
+        { status: 404 },
+      );
     }
 
     // 2. Fetch Submissions
@@ -29,7 +39,10 @@ export async function POST(req: NextRequest) {
       .eq("bounty_id", bountyId);
 
     if (subError || !submissions || submissions.length === 0) {
-      return NextResponse.json({ error: "No submissions found" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No submissions found", code: "NO_SUBMISSIONS", hint: "Wait for hunters to submit before running AI review." },
+        { status: 400 },
+      );
     }
 
     // 3. Prepare Gemini Prompt
@@ -146,6 +159,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "AI review failed", code: "AI_REVIEW_ERROR", hint: "Try again in a moment." },
+      { status: 500 },
+    );
   }
 }

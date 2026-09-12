@@ -1,0 +1,6 @@
+node_modules/
+target/
+.anchor/
+wallet.json
+.env*
+!.env.example
